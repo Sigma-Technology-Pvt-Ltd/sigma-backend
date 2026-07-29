@@ -29,7 +29,73 @@ app.use(express.json());
 
 // Root route for health check / confirmation
 app.get('/', (req, res) => {
-    res.json({ message: 'Sigma Technologies Backend API is running 🚀', status: 'online' });
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Sigma Technologies API</title>
+            <style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background-color: #0f172a;
+                    color: #f8fafc;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100vh;
+                }
+                .container {
+                    text-align: center;
+                    background: #1e293b;
+                    padding: 3rem;
+                    border-radius: 16px;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                    border-top: 4px solid #3b82f6;
+                    max-width: 600px;
+                }
+                h1 {
+                    margin: 0 0 1rem;
+                    font-size: 2.5rem;
+                    background: linear-gradient(to right, #60a5fa, #a855f7);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                p {
+                    font-size: 1.2rem;
+                    color: #94a3b8;
+                    margin-bottom: 2rem;
+                }
+                .status {
+                    display: inline-block;
+                    background: rgba(34, 197, 94, 0.1);
+                    color: #4ade80;
+                    padding: 0.5rem 1.2rem;
+                    border-radius: 999px;
+                    font-weight: bold;
+                    border: 1px solid rgba(34, 197, 94, 0.2);
+                    animation: pulse 2s infinite;
+                }
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+                    70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Sigma Technologies API</h1>
+                <p>The backend core is running smoothly and is ready to accept connections.</p>
+                <div class="status">● System Online</div>
+            </div>
+        </body>
+        </html>
+    `);
 });
 
 // Routes
