@@ -27,6 +27,11 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Root route for health check / confirmation
+app.get('/', (req, res) => {
+    res.json({ message: 'Sigma Technologies Backend API is running 🚀', status: 'online' });
+});
+
 // Routes
 app.use('/images', imageRoutes);    // Image proxy — hides Supabase URL
 app.use('/api/admin', adminRoutes);
