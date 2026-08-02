@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const getAllCategories = async (req, res) => {
     try {
         const categories = await prisma.category.findMany({
-            orderBy: { createdAt: 'desc' }
+            orderBy: { order: 'asc' }
         });
         return res.status(200).json({ result: 'success', data: categories });
     } catch (error) {
@@ -20,7 +20,7 @@ export const getAllCategories = async (req, res) => {
 // Create a category
 export const createCategory = async (req, res) => {
     try {
-        const { title, seoTitle, seoDescription, parentCategory, status } = req.body;
+        const { title, seoTitle, seoDescription, parentCategory, status, order } = req.body;
         
         if (!title) {
             return res.status(400).json({ result: 'error', message: 'Title is required' });
@@ -42,6 +42,7 @@ export const createCategory = async (req, res) => {
                 seoDescription: seoDescription || null,
                 parentCategory: parentCategory ? String(parentCategory) : null,
                 status: status !== undefined ? parseInt(status) : 1,
+                order: order !== undefined ? parseInt(order) : 0,
                 image: imageName,
                 userId: req.user ? parseInt(req.user.id) : 1,
             }
@@ -58,7 +59,7 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, seoTitle, seoDescription, parentCategory, status } = req.body;
+        const { title, seoTitle, seoDescription, parentCategory, status, order } = req.body;
 
         const categoryId = parseInt(id);
         const existingCategory = await prisma.category.findUnique({ where: { id: categoryId } });
@@ -84,6 +85,7 @@ export const updateCategory = async (req, res) => {
                 seoDescription: seoDescription !== undefined ? seoDescription : existingCategory.seoDescription,
                 parentCategory: parentCategory ? String(parentCategory) : null,
                 status: status !== undefined ? parseInt(status) : existingCategory.status,
+                order: order !== undefined ? parseInt(order) : existingCategory.order,
                 image: imageName,
             }
         });

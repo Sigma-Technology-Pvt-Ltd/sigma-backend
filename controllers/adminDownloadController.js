@@ -31,7 +31,7 @@ export const getAllDownloads = async (req, res) => {
 // Create a download
 export const createDownload = async (req, res) => {
     try {
-        const { title, productId, status } = req.body;
+        const { title, productId } = req.body;
         
         if (!title || !productId || !req.file) {
             return res.status(400).json({ result: 'error', message: 'Title, Product, and File are required' });
@@ -40,6 +40,8 @@ export const createDownload = async (req, res) => {
         // Save raw file without sharp conversion
         const filename = await saveRawFile(req.file.buffer, req.file.originalname, 'documents');
 
+        const originalFilename = req.file.originalname;
+
         const slug = slugify(title, { lower: true, strict: true }) + '-' + Date.now();
 
         const newDownload = await prisma.downloadFile.create({
@@ -47,8 +49,9 @@ export const createDownload = async (req, res) => {
                 title,
                 slug,
                 productId: parseInt(productId),
-                filename: filename, // DB stores the generated filename
-                status: status !== undefined ? parseInt(status) : 1,
+                filename: filename,
+                originalFilename: originalFilename,
+                userId: req.user ? parseInt(req.user.id) : 1,
             }
         });
 
@@ -63,7 +66,7 @@ export const createDownload = async (req, res) => {
 export const updateDownload = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, productId, status } = req.body;
+        const { title, productId } = req.body;
 
         const downloadId = parseInt(id);
         const existingDownload = await prisma.downloadFile.findUnique({ where: { id: downloadId } });
@@ -72,8 +75,10 @@ export const updateDownload = async (req, res) => {
         }
 
         let filename = existingDownload.filename;
+        let originalFilename = existingDownload.originalFilename;
         if (req.file) {
             filename = await saveRawFile(req.file.buffer, req.file.originalname, 'documents');
+            originalFilename = req.file.originalname;
         }
 
         const slug = title && title !== existingDownload.title ? (slugify(title, { lower: true, strict: true }) + '-' + Date.now()) : existingDownload.slug;
@@ -85,7 +90,7 @@ export const updateDownload = async (req, res) => {
                 slug: slug,
                 productId: productId ? parseInt(productId) : existingDownload.productId,
                 filename: filename,
-                status: status !== undefined ? parseInt(status) : existingDownload.status,
+                originalFilename: originalFilename,
             }
         });
 

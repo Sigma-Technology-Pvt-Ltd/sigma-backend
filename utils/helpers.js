@@ -35,15 +35,25 @@ BigInt.prototype.toJSON = function() {
     return this.toString();
 }
 
-export async function getApiSubCategory(categoryId) {
-    const categories = await prisma.category.findMany({
-        where: { parentCategory: categoryId.toString(), status: 1 },
+export async function getApiCategories(items) {
+    // Single query to get all active categories and avoid N+1 DB roundtrips
+    const allCategories = await prisma.category.findMany({
+        where: { status: 1 },
         orderBy: { order: 'asc' }
     });
 
-    const result = [];
-    for (const item of categories) {
-        result.push({
+    const categoryMap = new Map();
+    for (const cat of allCategories) {
+        const parentKey = cat.parentCategory ? String(cat.parentCategory) : 'root';
+        if (!categoryMap.has(parentKey)) {
+            categoryMap.set(parentKey, []);
+        }
+        categoryMap.get(parentKey).push(cat);
+    }
+
+    function buildSubCategories(parentId) {
+        const children = categoryMap.get(String(parentId)) || [];
+        return children.map(item => ({
             slug: item.slug,
             title: item.title,
             subtitle: item.subtitle,
@@ -52,13 +62,10 @@ export async function getApiSubCategory(categoryId) {
             icon: item.icon,
             image: item.image ? getImageUrl(item.image, '/frontend/images/categories/') : '',
             order: item.order,
-            subCategory: await getApiSubCategory(item.id)
-        });
+            subCategory: buildSubCategories(item.id)
+        }));
     }
-    return result;
-}
 
-export async function getApiCategories(items) {
     const categories = [];
     for (const item of items) {
         categories.push({
@@ -69,7 +76,7 @@ export async function getApiCategories(items) {
             link: item.link,
             pdf: item.pdf ? getImageUrl(item.pdf, '/frontend/pdf/') : null,
             image: item.image ? getImageUrl(item.image, '/frontend/images/categories/') : '',
-            subCategory: await getApiSubCategory(item.id)
+            subCategory: buildSubCategories(item.id)
         });
     }
     return categories;
