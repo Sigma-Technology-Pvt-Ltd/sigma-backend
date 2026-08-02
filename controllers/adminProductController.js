@@ -20,7 +20,7 @@ export const getAllProducts = async (req, res) => {
 // Create a product
 export const createProduct = async (req, res) => {
     try {
-        const { title, categoryId, summary, description, status, seoTitle, seoDescription } = req.body;
+        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification } = req.body;
         
         if (!title || !categoryId) {
             return res.status(400).json({ result: 'error', message: 'Title and Category are required' });
@@ -44,6 +44,9 @@ export const createProduct = async (req, res) => {
                 status: status !== undefined ? parseInt(status) : 1,
                 seoTitle: seoTitle || null,
                 seoDescription: seoDescription || null,
+                price: price || null,
+                salePrice: salePrice || null,
+                specification: specification || null,
                 image: imageName,
                 userId: req.user ? parseInt(req.user.id) : 1,
             }
@@ -60,7 +63,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, categoryId, summary, description, status, seoTitle, seoDescription } = req.body;
+        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification } = req.body;
 
         const productId = parseInt(id);
         const existingProduct = await prisma.product.findUnique({ where: { id: productId } });
@@ -87,6 +90,9 @@ export const updateProduct = async (req, res) => {
                 status: status !== undefined ? parseInt(status) : existingProduct.status,
                 seoTitle: seoTitle !== undefined ? seoTitle : existingProduct.seoTitle,
                 seoDescription: seoDescription !== undefined ? seoDescription : existingProduct.seoDescription,
+                price: price !== undefined ? price : existingProduct.price,
+                salePrice: salePrice !== undefined ? salePrice : existingProduct.salePrice,
+                specification: specification !== undefined ? specification : existingProduct.specification,
                 image: imageName,
             }
         });

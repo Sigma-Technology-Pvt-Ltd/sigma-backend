@@ -1,14 +1,15 @@
 import crypto from 'crypto';
+import { PrismaClient } from '@prisma/client';
+import { processAndSaveImage } from '../utils/imageProcessor.js';
 
-// In-memory store for previews. In production with multiple instances, use Redis.
-// Key: secret uuid, Value: preview data and timestamp
+const prisma = new PrismaClient();
 const previewStore = new Map();
 
 // Clean up old previews every 15 minutes to prevent memory leaks
 setInterval(() => {
     const now = Date.now();
     for (const [key, value] of previewStore.entries()) {
-        if (now - value.timestamp > 15 * 60 * 1000) { // 15 mins expiry
+        if (now - value.timestamp > 15 * 60 * 1000) {
             previewStore.delete(key);
         }
     }
@@ -17,19 +18,50 @@ setInterval(() => {
 export const createPreview = async (req, res) => {
     try {
         const previewId = crypto.randomUUID();
-        
-        // Ensure image file URL can be temporarily represented if passed
-        // For FormData, the file would be in req.file, other fields in req.body.
-        // We will store everything together.
-        
         const previewData = { ...req.body };
-        
+
         if (req.file) {
-            // We save the temporary uploaded file name/path so the frontend can fetch it.
-            // But since the frontend uses http://localhost:3000/frontend/images/products/...
-            // we might have to just rely on the existing image if editing, or a base64 string if it's new.
-            // For simplicity, we just store the file filename if multer processed it.
-            previewData.image = req.file.filename;
+            try {
+                const imageName = await processAndSaveImage(req.file.buffer, 'products');
+                previewData.image = imageName;
+            } catch (imgErr) {
+                console.error('Failed to process preview image', imgErr);
+            }
+        } else if (req.body.existingImage) {
+            previewData.image = req.body.existingImage;
+        }
+
+        if (req.body.downloads) {
+            try {
+                previewData.downloads = typeof req.body.downloads === 'string' ? JSON.parse(req.body.downloads) : req.body.downloads;
+            } catch (dlErr) {
+                console.error('Failed to parse preview downloads', dlErr);
+            }
+        }
+
+        if (req.body.categoryId) {
+            try {
+                const cat = await prisma.category.findUnique({
+                    where: { id: BigInt(req.body.categoryId) }
+                });
+                if (cat) previewData.category = cat.title;
+            } catch (catErr) {
+                console.error('Failed to fetch preview category', catErr);
+            }
+        }
+
+        if (req.body.brandId) {
+            try {
+                const brand = await prisma.brand.findUnique({
+                    where: { id: BigInt(req.body.brandId) }
+                });
+                if (brand) {
+                    previewData.brand_name = brand.title;
+                    previewData.brand_image = brand.image;
+                }
+            } catch (brandErr) {
+                console.error('Failed to fetch preview brand', brandErr);
+            }
         }
 
         previewStore.set(previewId, {
