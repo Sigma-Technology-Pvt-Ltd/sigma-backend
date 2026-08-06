@@ -4,6 +4,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+*.sql
 
 # Uploaded images/files (use cloud storage in production)
 public/frontend/images/
