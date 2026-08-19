@@ -3,10 +3,15 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'sigma_fallback_secret_key';
 
 export const login = async (req, res) => {
     try {
+        const JWT_SECRET = process.env.JWT_SECRET;
+        if (!JWT_SECRET) {
+            console.error('CRITICAL: JWT_SECRET environment variable is missing.');
+            return res.status(500).json({ result: 'error', message: 'Internal server error: Authentication misconfigured' });
+        }
+
         const { email, password } = req.body;
 
         if (!email || !password) {

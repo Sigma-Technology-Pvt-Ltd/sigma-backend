@@ -24,7 +24,15 @@ yarn-debug.log*
 .DS_Store
 Thumbs.db
 
-# Test scripts (not for production)
+# Test and Maintenance scripts (not for production)
 test_*.js
-cleanup_test_data.js
-seed_admin_user.js
+cleanup_*.js
+clear_*.js
+seed_*.js
+run_*.js
+convert_*.js
+create_*.js
+extract_*.js
+fix_*.js
+update_*.js
+append_models.cjs

@@ -3,7 +3,7 @@
 ## 1. Authentication
 All routes below are wrapped in an `apikey` middleware group. They require the following header in every request:
 ```
-apikey: G4DPpoM7Cj19BF1AssDT9A2ZBIifZPV6QxzftUv0u7SFpM9oNxf0yXSHf3GKsbI9
+apikey: <YOUR_API_KEY>
 ```
 
 ## 2. API Routes & Responses
