@@ -1,9 +1,13 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'sigma_fallback_secret_key';
-
 export const verifyToken = (req, res, next) => {
     try {
+        const JWT_SECRET = process.env.JWT_SECRET;
+        if (!JWT_SECRET) {
+            console.error('CRITICAL: JWT_SECRET environment variable is missing.');
+            return res.status(500).json({ result: 'error', message: 'Internal server error: Authentication misconfigured' });
+        }
+
         const authHeader = req.headers['authorization'];
         
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
