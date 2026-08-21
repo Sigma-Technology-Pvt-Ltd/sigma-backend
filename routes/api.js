@@ -8,7 +8,7 @@ import * as brandController from '../controllers/brandController.js';
 import * as faqController from '../controllers/faqController.js';
 import * as pluginController from '../controllers/pluginController.js';
 import * as pageController from '../controllers/pageController.js';
-import { formLimiter } from '../server.js';
+import { formLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 

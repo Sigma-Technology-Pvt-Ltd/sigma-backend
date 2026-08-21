@@ -16,7 +16,7 @@ import * as adminPreviewController from '../controllers/adminPreviewController.j
 import * as adminCleanupController from '../controllers/adminCleanupController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 import { upload, uploadDocument } from '../middleware/uploadMiddleware.js';
-import { loginLimiter } from '../server.js';
+import { loginLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 
