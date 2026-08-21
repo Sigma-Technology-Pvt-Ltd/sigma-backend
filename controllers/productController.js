@@ -116,6 +116,6 @@ export const downloadImage = async (req, res) => {
         return res.send(buffer);
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ result: 'error', message: error.message || 'Server error' });
+        return res.status(500).json({ result: 'error', message: 'Server error' });
     }
 };

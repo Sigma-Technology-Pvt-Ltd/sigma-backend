@@ -16,11 +16,12 @@ import * as adminPreviewController from '../controllers/adminPreviewController.j
 import * as adminCleanupController from '../controllers/adminCleanupController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 import { upload, uploadDocument } from '../middleware/uploadMiddleware.js';
+import { loginLimiter } from '../server.js';
 
 const router = express.Router();
 
 // Public admin routes
-router.post('/login', adminAuthController.login);
+router.post('/login', loginLimiter, adminAuthController.login);
 router.get('/preview/:id', adminPreviewController.getPreview);
 
 // Protected admin routes

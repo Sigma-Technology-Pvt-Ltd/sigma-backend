@@ -1,11 +1,31 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
 import apiRoutes from './routes/api.js';
 import adminRoutes from './routes/admin.js';
 import imageRoutes from './routes/images.js';
 
 dotenv.config();
+
+// ─── Rate Limiters ──────────────────────────────────────────────────────────
+// Login: 5 attempts per 15 minutes per IP — prevents brute-force
+export const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { result: 'error', message: 'Too many login attempts. Please try again in 15 minutes.' }
+});
+
+// Public form submissions: 10 per hour per IP — prevents spam
+export const formLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { result: 'error', message: 'Too many submissions. Please try again later.' }
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,7 +38,7 @@ const allowedOrigins = [
 ].filter(Boolean);
 app.use(cors({
     origin: function(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));

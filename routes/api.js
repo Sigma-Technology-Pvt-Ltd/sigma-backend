@@ -8,6 +8,7 @@ import * as brandController from '../controllers/brandController.js';
 import * as faqController from '../controllers/faqController.js';
 import * as pluginController from '../controllers/pluginController.js';
 import * as pageController from '../controllers/pageController.js';
+import { formLimiter } from '../server.js';
 
 const router = express.Router();
 
@@ -45,7 +46,7 @@ router.get('/products/:category', productController.index);
 router.get('/products/:product/show', productController.show);
 
 // Product Enquiry
-router.post('/products/:product', enquiryController.store);
+router.post('/products/:product', formLimiter, enquiryController.store);
 
 // Blog
 router.get('/blogs', blogController.index);
@@ -53,8 +54,8 @@ router.get('/blogs/:blog', blogController.show);
 router.get('/blogs/categories/:blog_category', blogController.category);
 
 // Phase C routes
-router.post('/contact-us', contactController.store);
-router.post('/subscriber', subscriberController.store);
+router.post('/contact-us', formLimiter, contactController.store);
+router.post('/subscriber', formLimiter, subscriberController.store);
 router.get('/download-image/:download_file', productController.downloadImage);
 
 export default router;
