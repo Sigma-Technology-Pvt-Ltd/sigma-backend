@@ -3,6 +3,8 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import slugify from 'slugify';
 import { uploadToSupabase } from '../utils/supabaseStorage.js';
+import { fileTypeFromBuffer } from 'file-type';
+import { DOCUMENT_ALLOWED_MIMES } from '../middleware/uploadMiddleware.js';
 
 const prisma = new PrismaClient();
 
@@ -35,6 +37,14 @@ export const createDownload = async (req, res) => {
         
         if (!title || !productId || !req.file) {
             return res.status(400).json({ result: 'error', message: 'Title, Product, and File are required' });
+        }
+
+        // Magic-byte MIME verification — checks actual file content, not browser-declared type
+        const detectedType = await fileTypeFromBuffer(req.file.buffer);
+        const detectedMime = detectedType?.mime;
+        const isImage = detectedMime?.startsWith('image/');
+        if (!detectedMime || (!isImage && !DOCUMENT_ALLOWED_MIMES.includes(detectedMime))) {
+            return res.status(400).json({ result: 'error', message: 'Invalid file type. Only PDF, Word documents, images, and ZIP files are allowed.' });
         }
 
         // Save raw file without sharp conversion
@@ -77,6 +87,13 @@ export const updateDownload = async (req, res) => {
         let filename = existingDownload.filename;
         let originalFilename = existingDownload.originalFilename;
         if (req.file) {
+            // Magic-byte MIME verification on update too
+            const detectedType = await fileTypeFromBuffer(req.file.buffer);
+            const detectedMime = detectedType?.mime;
+            const isImage = detectedMime?.startsWith('image/');
+            if (!detectedMime || (!isImage && !DOCUMENT_ALLOWED_MIMES.includes(detectedMime))) {
+                return res.status(400).json({ result: 'error', message: 'Invalid file type. Only PDF, Word documents, images, and ZIP files are allowed.' });
+            }
             filename = await saveRawFile(req.file.buffer, req.file.originalname, 'documents');
             originalFilename = req.file.originalname;
         }
