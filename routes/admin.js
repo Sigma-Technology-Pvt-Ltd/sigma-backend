@@ -14,6 +14,8 @@ import * as adminSubscriberController from '../controllers/adminSubscriberContro
 import * as adminDashboardController from '../controllers/adminDashboardController.js';
 import * as adminPreviewController from '../controllers/adminPreviewController.js';
 import * as adminCleanupController from '../controllers/adminCleanupController.js';
+import * as agentController from '../controllers/agentController.js';
+import * as ticketController from '../controllers/ticketController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 import { upload, uploadDocument } from '../middleware/uploadMiddleware.js';
 import { loginLimiter } from '../middleware/rateLimiter.js';
@@ -98,5 +100,17 @@ router.get('/contacts', adminContactController.getAllContacts);
 
 // Subscriber Routes
 router.get('/subscribers', adminSubscriberController.getAllSubscribers);
+
+// ─── Agent Management Routes (admin-only) ────────────────────────────────────
+router.get('/agents', agentController.getAllAgents);
+router.post('/agents', agentController.createAgent);
+router.put('/agents/:id', agentController.updateAgent);
+router.patch('/agents/:id/toggle-status', agentController.toggleAgentStatus);
+router.patch('/agents/:id/reset-password', agentController.resetAgentPassword);
+router.delete('/agents/:id', agentController.deleteAgent);
+
+// ─── Ticket Admin Routes (admin-only) ─────────────────────────────────────────
+router.get('/ticket-stats', ticketController.getTicketStats);
+router.get('/tickets/:id', ticketController.getTicketAdmin);
 
 export default router;
