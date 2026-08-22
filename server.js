@@ -16,6 +16,9 @@ const allowedOrigins = [
     process.env.FRONTEND_URL,
     process.env.ADMIN_URL,
     process.env.TICKETING_URL,
+    'https://sigma-claimdesk.vercel.app',
+    'https://sigma-admin-eta.vercel.app',
+    'https://sigma-frontend-azure.vercel.app',
     'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:3001'
@@ -27,7 +30,12 @@ app.use(cors({
     origin: function(origin, callback) {
         if (!origin) return callback(null, true);
         const cleanOrigin = origin.replace(/\/+$/, '');
-        if (allowedOrigins.includes(cleanOrigin)) {
+        if (
+            allowedOrigins.includes(cleanOrigin) ||
+            cleanOrigin.endsWith('.vercel.app') ||
+            cleanOrigin.includes('localhost') ||
+            cleanOrigin.includes('127.0.0.1')
+        ) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
