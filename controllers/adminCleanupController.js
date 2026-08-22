@@ -19,7 +19,7 @@ export const searchCleanup = async (req, res) => {
 
         const combinedFilter = { ...dateFilter, ...keywordFilter };
 
-        const [products, blogs, careers, categories, blogCategories, banners, testimonials, faqs] = await Promise.all([
+        const [products, blogs, careers, categories, blogCategories, banners, testimonials, faqs, tickets] = await Promise.all([
             prisma.product.findMany({ where: combinedFilter, select: { id: true, title: true, createdAt: true }, orderBy: { createdAt: 'desc' } }),
             prisma.blog.findMany({ where: combinedFilter, select: { id: true, title: true, createdAt: true }, orderBy: { createdAt: 'desc' } }),
             prisma.career.findMany({ where: combinedFilter, select: { id: true, title: true, createdAt: true }, orderBy: { createdAt: 'desc' } }),
@@ -28,6 +28,22 @@ export const searchCleanup = async (req, res) => {
             prisma.banner.findMany({ where: combinedFilter, select: { id: true, title: true, createdAt: true }, orderBy: { createdAt: 'desc' } }),
             prisma.testimonial.findMany({ where: { ...dateFilter, ...(keyword ? { fullName: { contains: keyword, mode: 'insensitive' } } : {}) }, select: { id: true, fullName: true, createdAt: true }, orderBy: { createdAt: 'desc' } }),
             prisma.faq.findMany({ where: { ...dateFilter, ...(keyword ? { question: { contains: keyword, mode: 'insensitive' } } : {}) }, select: { id: true, question: true, createdAt: true }, orderBy: { createdAt: 'desc' } }),
+            prisma.ticket.findMany({
+                where: {
+                    ...dateFilter,
+                    ...(keyword ? {
+                        OR: [
+                            { ticketNumber: { contains: keyword, mode: 'insensitive' } },
+                            { customerName: { contains: keyword, mode: 'insensitive' } },
+                            { customerEmail: { contains: keyword, mode: 'insensitive' } },
+                            { productName: { contains: keyword, mode: 'insensitive' } },
+                            { description: { contains: keyword, mode: 'insensitive' } },
+                        ]
+                    } : {})
+                },
+                select: { id: true, ticketNumber: true, customerName: true, createdAt: true },
+                orderBy: { createdAt: 'desc' }
+            }),
         ]);
 
         res.json({
@@ -41,6 +57,7 @@ export const searchCleanup = async (req, res) => {
                 banners: banners.map(r => ({ ...r, type: 'banner', displayTitle: r.title })),
                 testimonials: testimonials.map(r => ({ ...r, type: 'testimonial', displayTitle: r.fullName })),
                 faqs: faqs.map(r => ({ ...r, type: 'faq', displayTitle: r.question })),
+                tickets: tickets.map(r => ({ ...r, type: 'ticket', displayTitle: `${r.ticketNumber} — ${r.customerName}` })),
             }
         });
     } catch (error) {
@@ -53,7 +70,7 @@ export const searchCleanup = async (req, res) => {
 export const deleteCleanup = async (req, res) => {
     try {
         const { selections } = req.body;
-        // selections: { products: [1,2,3], blogs: [4,5], careers: [], ... }
+        // selections: { products: [1,2,3], blogs: [4,5], careers: [], tickets: [], ... }
 
         if (!selections) {
             return res.status(400).json({ result: 'error', message: 'No selections provided.' });
@@ -92,6 +109,10 @@ export const deleteCleanup = async (req, res) => {
         if (selections.faqs?.length) {
             await prisma.faq.deleteMany({ where: { id: { in: selections.faqs.map(Number) } } });
             results.faqs = selections.faqs.length;
+        }
+        if (selections.tickets?.length) {
+            await prisma.ticket.deleteMany({ where: { id: { in: selections.tickets.map(Number) } } });
+            results.tickets = selections.tickets.length;
         }
 
         const totalDeleted = Object.values(results).reduce((a, b) => a + b, 0);

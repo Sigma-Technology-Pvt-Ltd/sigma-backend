@@ -504,3 +504,83 @@ model User {
 
   @@map("users")
 }
+
+// ─── Ticketing System Models ────────────────────────────────────────────────
+
+model Agent {
+  id               Int            @id @default(autoincrement())
+  name             String
+  email            String         @unique
+  password         String
+  role             String         @default("agent")
+  isActive         Boolean        @default(true) @map("is_active")
+  createdByAdminId Int?           @map("created_by_admin_id")
+  createdAt        DateTime?      @default(now()) @map("created_at")
+  updatedAt        DateTime?      @updatedAt @map("updated_at")
+
+  tickets          Ticket[]       @relation("AssignedAgent")
+  remarks          TicketRemark[]
+
+  @@map("agents")
+}
+
+model Ticket {
+  id              Int              @id @default(autoincrement())
+  ticketNumber    String           @unique @map("ticket_number")
+  productId       Int?             @map("product_id")
+  productName     String?          @map("product_name")
+  customerName    String           @map("customer_name")
+  customerEmail   String           @map("customer_email")
+  customerPhone   String           @map("customer_phone")
+  issueType       String           @map("issue_type")
+  description     String           @db.Text
+  status          String           @default("Open")
+  assignedAgentId Int?             @map("assigned_agent_id")
+  createdAt       DateTime?        @default(now()) @map("created_at")
+  updatedAt       DateTime?        @updatedAt @map("updated_at")
+
+  agent           Agent?           @relation("AssignedAgent", fields: [assignedAgentId], references: [id])
+  images          TicketImage[]
+  remarks         TicketRemark[]
+  activities      TicketActivity[]
+
+  @@map("tickets")
+}
+
+model TicketImage {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int      @map("ticket_id")
+  imageUrl  String   @map("image_url")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_images")
+}
+
+model TicketRemark {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int      @map("ticket_id")
+  agentId   Int      @map("agent_id")
+  message   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  agent     Agent    @relation(fields: [agentId], references: [id])
+
+  @@map("ticket_remarks")
+}
+
+model TicketActivity {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int      @map("ticket_id")
+  actorName String   @map("actor_name")
+  action    String
+  detail    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_activities")
+}
+

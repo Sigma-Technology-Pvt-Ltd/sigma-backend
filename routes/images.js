@@ -25,7 +25,7 @@ router.get('/:folder/:filename', async (req, res) => {
 
         // If not found, try fallback folders
         if (fileRes.error || !fileRes.data) {
-            const fallbackFolders = ['products', 'documents', 'downloads', 'blogs', 'brands', 'banners', 'concerns', 'associations', 'testimonials', ''];
+            const fallbackFolders = ['products', 'documents', 'downloads', 'blogs', 'brands', 'banners', 'concerns', 'associations', 'testimonials', 'ticket-media', ''];
             for (const f of fallbackFolders) {
                 if (f === folder) continue;
                 const path = f ? `${f}/${filename}` : filename;

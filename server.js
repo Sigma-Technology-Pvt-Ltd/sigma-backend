@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import apiRoutes from './routes/api.js';
 import adminRoutes from './routes/admin.js';
 import imageRoutes from './routes/images.js';
+import ticketRoutes from './routes/tickets.js';
+import agentAuthRoutes from './routes/agentAuth.js';
 
 dotenv.config();
 
@@ -13,17 +15,25 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
     process.env.FRONTEND_URL,
     process.env.ADMIN_URL,
+    process.env.TICKETING_URL,
     'http://localhost:5173',
+    'http://localhost:5174',
     'http://localhost:3001'
-].filter(Boolean);
+]
+    .filter(Boolean)
+    .map(url => url.replace(/\/+$/, '')); // Strip trailing slashes
+
 app.use(cors({
     origin: function(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin) return callback(null, true);
+        const cleanOrigin = origin.replace(/\/+$/, '');
+        if (allowedOrigins.includes(cleanOrigin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
         }
-    }
+    },
+    credentials: true
 }));
 app.use(express.json());
 
@@ -99,9 +109,35 @@ app.get('/', (req, res) => {
 });
 
 // Routes
-app.use('/images', imageRoutes);    // Image proxy — hides Supabase URL
+app.use('/images', imageRoutes);       // Image proxy — hides Supabase URL
+app.use('/api/agent-auth', agentAuthRoutes); // ClaimDesk agent login
+app.use('/api/tickets', ticketRoutes); // Public ticket submission + agent ticket management
 app.use('/api/admin', adminRoutes);
 app.use('/api', apiRoutes);
+
+// Global Error Handler — catches unhandled errors and returns a generic safe JSON response
+app.use((err, req, res, next) => {
+    console.error(`[Unhandled Error] ${req.method} ${req.url}:`, err);
+
+    if (err.message === 'Not allowed by CORS') {
+        return res.status(403).json({
+            result: 'error',
+            message: 'CORS forbidden: Origin not allowed'
+        });
+    }
+
+    if (err.name === 'MulterError') {
+        return res.status(400).json({
+            result: 'error',
+            message: `Upload error: ${err.message}`
+        });
+    }
+
+    return res.status(500).json({
+        result: 'error',
+        message: 'Internal server error'
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
