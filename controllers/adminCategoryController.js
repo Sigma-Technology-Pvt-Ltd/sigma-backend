@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { processAndSaveImage } from '../utils/imageProcessor.js';
 import slugify from 'slugify';
+import cache from '../utils/cache.js';
 
 const prisma = new PrismaClient();
 
@@ -48,6 +49,7 @@ export const createCategory = async (req, res) => {
             }
         });
 
+        cache.del('categories:*');
         return res.status(201).json({ result: 'success', data: newCategory, message: 'Category created successfully' });
     } catch (error) {
         console.error('Error creating category:', error);
@@ -90,6 +92,7 @@ export const updateCategory = async (req, res) => {
             }
         });
 
+        cache.del('categories:*');
         return res.status(200).json({ result: 'success', data: updatedCategory, message: 'Category updated successfully' });
     } catch (error) {
         console.error('Error updating category:', error);
@@ -105,8 +108,7 @@ export const deleteCategory = async (req, res) => {
 
         await prisma.category.delete({ where: { id: categoryId } });
         
-        // Optional: Delete the category's image file from disk
-
+        cache.del('categories:*');
         return res.status(200).json({ result: 'success', message: 'Category deleted successfully' });
     } catch (error) {
         console.error('Error deleting category:', error);

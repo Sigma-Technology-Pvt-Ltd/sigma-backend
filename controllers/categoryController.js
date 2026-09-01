@@ -1,10 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 import { getApiCategories, getApiCategory, getApiProducts, getApiFilterSubCategories } from '../utils/helpers.js';
+import cache from '../utils/cache.js';
 
 const prisma = new PrismaClient();
 
 export const index = async (req, res) => {
     try {
+        const cached = cache.get('categories:index');
+        if (cached) {
+            return res.json(cached);
+        }
+
         const categoriesData = await prisma.category.findMany({
             where: { 
                 parentCategory: null,
@@ -16,10 +22,13 @@ export const index = async (req, res) => {
 
         const categories = await getApiCategories(categoriesData);
 
-        return res.json({
+        const responseData = {
             result: 'success',
             categories: categories
-        });
+        };
+
+        cache.set('categories:index', responseData, 600);
+        return res.json(responseData);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Server error' });
@@ -28,6 +37,11 @@ export const index = async (req, res) => {
 
 export const navigation = async (req, res) => {
     try {
+        const cached = cache.get('categories:navigation');
+        if (cached) {
+            return res.json(cached);
+        }
+
         const categoriesData = await prisma.category.findMany({
             where: { 
                 parentCategory: null,
@@ -39,10 +53,13 @@ export const navigation = async (req, res) => {
 
         const categories = await getApiCategories(categoriesData);
 
-        return res.json({
+        const responseData = {
             result: 'success',
             categories: categories
-        });
+        };
+
+        cache.set('categories:navigation', responseData, 600);
+        return res.json(responseData);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Server error' });

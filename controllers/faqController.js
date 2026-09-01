@@ -1,31 +1,46 @@
 import { PrismaClient } from '@prisma/client';
+import cache from '../utils/cache.js';
 
 const prisma = new PrismaClient();
 
 export const index = async (req, res) => {
     try {
-        const faqTypes = await prisma.faqType.findMany({
-            where: { status: 1 }
-        });
+        const cached = cache.get('faqs:index');
+        if (cached) {
+            return res.json(cached);
+        }
 
-        const types = await Promise.all(faqTypes.map(async (type) => {
-            const faqs = await prisma.faq.findMany({
-                where: { typeId: Number(type.id), status: 1 }
+        const [faqTypes, allFaqs] = await Promise.all([
+            prisma.faqType.findMany({
+                where: { status: 1 }
+            }),
+            prisma.faq.findMany({
+                where: { status: 1 }
+            })
+        ]);
+
+        const faqsByType = new Map();
+        for (const faq of allFaqs) {
+            const key = Number(faq.typeId);
+            if (!faqsByType.has(key)) faqsByType.set(key, []);
+            faqsByType.get(key).push({
+                question: faq.question,
+                answer: faq.answer
             });
+        }
 
-            return {
-                title: type.title,
-                faqs: faqs.map(faq => ({
-                    question: faq.question,
-                    answer: faq.answer
-                }))
-            };
+        const types = faqTypes.map((type) => ({
+            title: type.title,
+            faqs: faqsByType.get(Number(type.id)) || []
         }));
 
-        return res.json({
+        const responseData = {
             result: 'success',
-            faqs: types 
-        });
+            faqs: types
+        };
+
+        cache.set('faqs:index', responseData, 600);
+        return res.json(responseData);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Server error' });

@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { processAndSaveImage } from '../utils/imageProcessor.js';
 import slugify from 'slugify';
+import cache from '../utils/cache.js';
 
 const prisma = new PrismaClient();
 
@@ -44,6 +45,7 @@ export const createBanner = async (req, res) => {
             }
         });
 
+        cache.del('banners:*');
         return res.status(201).json({ result: 'success', data: newBanner, message: 'Banner created successfully' });
     } catch (error) {
         console.error('Error creating banner:', error);
@@ -83,6 +85,7 @@ export const updateBanner = async (req, res) => {
             }
         });
 
+        cache.del('banners:*');
         return res.status(200).json({ result: 'success', data: updatedBanner, message: 'Banner updated successfully' });
     } catch (error) {
         console.error('Error updating banner:', error);
@@ -98,6 +101,7 @@ export const deleteBanner = async (req, res) => {
 
         await prisma.banner.delete({ where: { id: bannerId } });
         
+        cache.del('banners:*');
         return res.status(200).json({ result: 'success', message: 'Banner deleted successfully' });
     } catch (error) {
         console.error('Error deleting banner:', error);
