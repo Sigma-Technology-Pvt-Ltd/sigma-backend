@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
 import apiRoutes from './routes/api.js';
 import adminRoutes from './routes/admin.js';
 import imageRoutes from './routes/images.js';
@@ -10,6 +11,7 @@ import agentAuthRoutes from './routes/agentAuth.js';
 dotenv.config();
 
 const app = express();
+const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 
 const allowedOrigins = [
@@ -115,6 +117,38 @@ app.get('/', (req, res) => {
         </html>
     `);
 });
+
+// Health check route — performs a live DB query to keep Render & Supabase active
+const handleHealthCheck = async (req, res) => {
+    const startTime = Date.now();
+    try {
+        const queryResult = await prisma.$queryRaw`SELECT NOW() as db_time, 1 as active`;
+        const latencyMs = Date.now() - startTime;
+
+        return res.status(200).json({
+            status: 'healthy',
+            server: 'online',
+            database: 'connected',
+            latency_ms: latencyMs,
+            db_time: queryResult?.[0]?.db_time || null,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        const latencyMs = Date.now() - startTime;
+        console.error('[Health Check Failed]:', error.message);
+        return res.status(503).json({
+            status: 'unhealthy',
+            server: 'online',
+            database: 'disconnected',
+            latency_ms: latencyMs,
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+};
+
+app.get('/health', handleHealthCheck);
+app.get('/api/health', handleHealthCheck);
 
 // Routes
 app.use('/images', imageRoutes);       // Image proxy — hides Supabase URL
