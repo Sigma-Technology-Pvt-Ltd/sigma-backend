@@ -18,6 +18,8 @@ const allowedOrigins = [
     process.env.FRONTEND_URL,
     process.env.ADMIN_URL,
     process.env.TICKETING_URL,
+    'https://sigmatechnologies.com.np',
+    'https://www.sigmatechnologies.com.np',
     'https://sigma-claimdesk.vercel.app',
     'https://sigma-admin-eta.vercel.app',
     'https://sigma-frontend-azure.vercel.app',
@@ -35,6 +37,7 @@ app.use(cors({
         if (
             allowedOrigins.includes(cleanOrigin) ||
             cleanOrigin.endsWith('.vercel.app') ||
+            cleanOrigin.endsWith('sigmatechnologies.com.np') ||
             cleanOrigin.includes('localhost') ||
             cleanOrigin.includes('127.0.0.1')
         ) {
