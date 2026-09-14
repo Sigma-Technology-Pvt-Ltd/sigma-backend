@@ -14,6 +14,7 @@ import * as adminSubscriberController from '../controllers/adminSubscriberContro
 import * as adminDashboardController from '../controllers/adminDashboardController.js';
 import * as adminPreviewController from '../controllers/adminPreviewController.js';
 import * as adminCleanupController from '../controllers/adminCleanupController.js';
+import * as adminProductImageController from '../controllers/adminProductImageController.js';
 import * as agentController from '../controllers/agentController.js';
 import * as ticketController from '../controllers/ticketController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
@@ -51,6 +52,11 @@ router.get('/products', adminProductController.getAllProducts);
 router.post('/products', upload.single('image'), adminProductController.createProduct);
 router.put('/products/:id', upload.single('image'), adminProductController.updateProduct);
 router.delete('/products/:id', adminProductController.deleteProduct);
+
+// Product Gallery Image Routes (Multiple Upload & Management)
+router.get('/products/:id/images', adminProductImageController.getProductImages);
+router.post('/products/:id/images', upload.array('images', 10), adminProductImageController.uploadProductImages);
+router.delete('/products/images/:imageId', adminProductImageController.deleteProductImage);
 
 // Banner Routes
 router.get('/banners', adminBannerController.getAllBanners);

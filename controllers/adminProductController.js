@@ -49,6 +49,8 @@ export const createProduct = async (req, res) => {
                 specification: specification || null,
                 image: imageName,
                 userId: req.user ? parseInt(req.user.id) : 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             }
         });
 
@@ -94,6 +96,7 @@ export const updateProduct = async (req, res) => {
                 salePrice: salePrice !== undefined ? salePrice : existingProduct.salePrice,
                 specification: specification !== undefined ? specification : existingProduct.specification,
                 image: imageName,
+                updatedAt: new Date(),
             }
         });
 
