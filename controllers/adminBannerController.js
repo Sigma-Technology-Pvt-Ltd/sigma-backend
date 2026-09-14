@@ -18,6 +18,23 @@ export const getAllBanners = async (req, res) => {
     }
 };
 
+// Get single banner by ID
+export const getBannerById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const banner = await prisma.banner.findUnique({
+            where: { id: parseInt(id) }
+        });
+        if (!banner) {
+            return res.status(404).json({ result: 'error', message: 'Banner not found' });
+        }
+        return res.status(200).json({ result: 'success', data: banner });
+    } catch (error) {
+        console.error('Error fetching banner by ID:', error);
+        return res.status(500).json({ result: 'error', message: 'Internal server error' });
+    }
+};
+
 // Create a banner
 export const createBanner = async (req, res) => {
     try {

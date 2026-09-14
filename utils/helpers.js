@@ -20,7 +20,7 @@ export function getImageUrl(imagePath, directory) {
     // Return URL through frontend domain — Supabase completely hidden
     // Vercel rewrites /images/* → Supabase in production
     // Backend proxy /images/* → Supabase in local dev
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://sigmatechnologies.com.np';
     const folder = FOLDER_MAP[directory] || 'products';
     return `${frontendUrl}/images/${folder}/${imagePath}`;
 }

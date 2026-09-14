@@ -18,10 +18,27 @@ export const getAllCategories = async (req, res) => {
     }
 };
 
+// Get single category by ID
+export const getCategoryById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const category = await prisma.category.findUnique({
+            where: { id: parseInt(id) }
+        });
+        if (!category) {
+            return res.status(404).json({ result: 'error', message: 'Category not found' });
+        }
+        return res.status(200).json({ result: 'success', data: category });
+    } catch (error) {
+        console.error('Error fetching category by ID:', error);
+        return res.status(500).json({ result: 'error', message: 'Internal server error' });
+    }
+};
+
 // Create a category
 export const createCategory = async (req, res) => {
     try {
-        const { title, seoTitle, seoDescription, parentCategory, status, order } = req.body;
+        const { title, seoTitle, seoDescription, parentCategory, status, order, navigationStatus } = req.body;
         
         if (!title) {
             return res.status(400).json({ result: 'error', message: 'Title is required' });
@@ -34,6 +51,7 @@ export const createCategory = async (req, res) => {
         }
 
         const slug = slugify(title, { lower: true, strict: true });
+        const isRoot = !parentCategory || parentCategory === '' || parentCategory === '0';
 
         const newCategory = await prisma.category.create({
             data: {
@@ -43,6 +61,8 @@ export const createCategory = async (req, res) => {
                 seoDescription: seoDescription || null,
                 parentCategory: parentCategory ? String(parentCategory) : null,
                 status: status !== undefined ? parseInt(status) : 1,
+                navigationStatus: navigationStatus !== undefined ? parseInt(navigationStatus) : (isRoot ? 1 : 0),
+                homeStatus: req.body.homeStatus !== undefined ? parseInt(req.body.homeStatus) : (isRoot ? 1 : 0),
                 order: order !== undefined ? parseInt(order) : 0,
                 image: imageName,
                 userId: req.user ? parseInt(req.user.id) : 1,
@@ -61,7 +81,7 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, seoTitle, seoDescription, parentCategory, status, order } = req.body;
+        const { title, seoTitle, seoDescription, parentCategory, status, order, navigationStatus, homeStatus } = req.body;
 
         const categoryId = parseInt(id);
         const existingCategory = await prisma.category.findUnique({ where: { id: categoryId } });
@@ -77,6 +97,7 @@ export const updateCategory = async (req, res) => {
         }
 
         const slug = title ? slugify(title, { lower: true, strict: true }) : existingCategory.slug;
+        const isRoot = !parentCategory || parentCategory === '' || parentCategory === '0';
 
         const updatedCategory = await prisma.category.update({
             where: { id: categoryId },
@@ -87,6 +108,8 @@ export const updateCategory = async (req, res) => {
                 seoDescription: seoDescription !== undefined ? seoDescription : existingCategory.seoDescription,
                 parentCategory: parentCategory ? String(parentCategory) : null,
                 status: status !== undefined ? parseInt(status) : existingCategory.status,
+                navigationStatus: navigationStatus !== undefined ? parseInt(navigationStatus) : (isRoot ? 1 : existingCategory.navigationStatus),
+                homeStatus: homeStatus !== undefined ? parseInt(homeStatus) : (isRoot ? 1 : existingCategory.homeStatus),
                 order: order !== undefined ? parseInt(order) : existingCategory.order,
                 image: imageName,
             }

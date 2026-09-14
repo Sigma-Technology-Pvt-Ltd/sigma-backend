@@ -20,6 +20,7 @@ router.get('/sister-concern', concernController.index);
 router.get('/testimonials', testimonialController.index);
 router.get('/banners', bannerController.index);
 router.get('/banners/offer', bannerController.offer);
+router.get('/banners/about', bannerController.about);
 router.get('/brands', brandController.index);
 router.get('/faqs', faqController.index);
 router.get('/plugins', pluginController.index);

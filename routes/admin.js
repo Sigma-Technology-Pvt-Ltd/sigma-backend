@@ -43,6 +43,7 @@ router.post('/cleanup/delete', adminCleanupController.deleteCleanup);
 
 // Category Routes
 router.get('/categories', adminCategoryController.getAllCategories);
+router.get('/categories/:id', adminCategoryController.getCategoryById);
 router.post('/categories', upload.single('image'), adminCategoryController.createCategory);
 router.put('/categories/:id', upload.single('image'), adminCategoryController.updateCategory);
 router.delete('/categories/:id', adminCategoryController.deleteCategory);
@@ -60,6 +61,7 @@ router.delete('/products/images/:imageId', adminProductImageController.deletePro
 
 // Banner Routes
 router.get('/banners', adminBannerController.getAllBanners);
+router.get('/banners/:id', adminBannerController.getBannerById);
 router.post('/banners', upload.single('image'), adminBannerController.createBanner);
 router.put('/banners/:id', upload.single('image'), adminBannerController.updateBanner);
 router.delete('/banners/:id', adminBannerController.deleteBanner);

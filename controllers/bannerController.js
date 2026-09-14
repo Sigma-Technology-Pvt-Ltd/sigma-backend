@@ -52,3 +52,41 @@ export const index = async (req, res) => {
 export const offer = async (req, res) => {
     return fetchBanners(res, true);
 };
+
+export const about = async (req, res) => {
+    const cacheKey = 'banners:about';
+    try {
+        const cached = cache.get(cacheKey);
+        if (cached) {
+            return res.json(cached);
+        }
+
+        const banner = await prisma.banner.findFirst({
+            where: {
+                status: 1,
+                type: { in: ['About Us Banner', 'About Us Showcase Banner'] }
+            },
+            orderBy: { id: 'desc' }
+        });
+
+        const formatted = banner ? {
+            id: banner.id.toString(),
+            title: banner.title,
+            type: banner.type,
+            link: banner.links,
+            subtitle: banner.subtitle,
+            image: getImageUrl(banner.image, '/frontend/images/banners/')
+        } : null;
+
+        const responseData = {
+            result: 'success',
+            banner: formatted
+        };
+
+        cache.set(cacheKey, responseData, 600);
+        return res.json(responseData);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Server error' });
+    }
+};

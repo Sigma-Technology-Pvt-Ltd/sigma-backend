@@ -20,7 +20,7 @@ export const getAllProducts = async (req, res) => {
 // Create a product
 export const createProduct = async (req, res) => {
     try {
-        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification } = req.body;
+        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification, type, orderStatus } = req.body;
         
         if (!title || !categoryId) {
             return res.status(400).json({ result: 'error', message: 'Title and Category are required' });
@@ -47,6 +47,8 @@ export const createProduct = async (req, res) => {
                 price: price || null,
                 salePrice: salePrice || null,
                 specification: specification || null,
+                type: type || null,
+                orderStatus: orderStatus !== undefined ? parseInt(orderStatus) : 0,
                 image: imageName,
                 userId: req.user ? parseInt(req.user.id) : 1,
                 createdAt: new Date(),
@@ -65,7 +67,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification } = req.body;
+        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification, type, orderStatus } = req.body;
 
         const productId = parseInt(id);
         const existingProduct = await prisma.product.findUnique({ where: { id: productId } });
@@ -95,6 +97,8 @@ export const updateProduct = async (req, res) => {
                 price: price !== undefined ? price : existingProduct.price,
                 salePrice: salePrice !== undefined ? salePrice : existingProduct.salePrice,
                 specification: specification !== undefined ? specification : existingProduct.specification,
+                type: type !== undefined ? (type || null) : existingProduct.type,
+                orderStatus: orderStatus !== undefined ? parseInt(orderStatus) : existingProduct.orderStatus,
                 image: imageName,
                 updatedAt: new Date(),
             }
