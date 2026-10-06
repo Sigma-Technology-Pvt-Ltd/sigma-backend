@@ -1,0 +1,452 @@
+[
+  {
+    "id": "75d15743-5463-4fc4-b67e-1a856698bb5f",
+    "quotationNumber": "SIGMA-QT-5968",
+    "enquiryId": "29",
+    "customer": {
+      "name": "TUSHAR KARMAKAR",
+      "email": "tushkarmakar@gmail.com",
+      "phone": "06370680744",
+      "company": "",
+      "address": "Site Delivery / Ex-Works",
+      "panVat": ""
+    },
+    "projectTitle": "Quotation for Wood Fired Fireplace (E30-L)",
+    "date": "17/09/2026",
+    "validity": "30 Days",
+    "deliveryTime": "2-3 Working Weeks",
+    "items": [
+      {
+        "id": 1,
+        "description": "Wood Fired Fireplace (E30-L)",
+        "qty": 1,
+        "unitPrice": 413480,
+        "amount": 413480
+      }
+    ],
+    "subtotal": 413480,
+    "isVatApplicable": true,
+    "vatRate": 13,
+    "vatAmount": 53752.4,
+    "grandTotal": 467232.4,
+    "amountInWords": "Four Lakh Sixty Seven Thousand Two Hundred Thirty Two Rupees Only",
+    "terms": [
+      {
+        "id": "validity",
+        "title": "Quotation Validity.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "validity-a",
+            "text": "This quotation is valid for a period of 30 (thirty) days from the date of issue, unless otherwise specified or extended in writing by the Company.",
+            "selected": true
+          },
+          {
+            "id": "validity-b",
+            "text": "The Company reserves the right to review or withdraw the quotation if technical specifications, site conditions, or commercial requirements are altered prior to written acceptance.",
+            "selected": true
+          }
+        ],
+        "text": "This quotation is valid for 30 days from the date of issue. The Company reserves the right to review terms if technical specifications change prior to order confirmation."
+      },
+      {
+        "id": "pricing",
+        "title": "Prices, Taxes & Duties.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "pricing-a",
+            "text": "All prices quoted are in Nepalese Rupees (NPR). Prices are exclusive of 13% Value Added Tax (VAT), which will be charged as applicable at the time of invoicing.",
+            "selected": true
+          },
+          {
+            "id": "pricing-b",
+            "text": "Unless expressly stated in the scope of supply, prices quoted are Ex-Works / Godown and do not include transit insurance, freight, or local unloading charges at the customer's site.",
+            "selected": true
+          },
+          {
+            "id": "pricing-c",
+            "text": "Any change in statutory government taxes, levies, or customs duties enacted prior to supply execution will be applicable to the customer at actuals.",
+            "selected": true
+          },
+          {
+            "id": "pricing-d",
+            "text": "If there is an inadvertent typographical error or arithmetic omission, the Company reserves the right to issue an amended quotation prior to order finalization.",
+            "selected": true
+          }
+        ],
+        "text": "All prices are in Nepalese Rupees (NPR), exclusive of 13% VAT unless stated otherwise. Prices are Ex-Works unless freight is specified. Taxes and statutory levies applicable at billing time."
+      },
+      {
+        "id": "payment",
+        "title": "Terms of Payment.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "payment-a",
+            "text": "Standard payment terms: 50% advance payment along with confirmed Purchase Order / Work Order; balance 50% prior to dispatch or upon delivery as mutually agreed.",
+            "selected": true
+          },
+          {
+            "id": "payment-b",
+            "text": "Payments shall be made via account payee cheque or electronic bank transfer in favor of Sigma Technologies Pvt. Ltd.",
+            "selected": true
+          },
+          {
+            "id": "payment-c",
+            "text": "Engineering design, procurement, and dispatch schedules will be initiated only upon receipt and clearance of the agreed advance payment.",
+            "selected": true
+          }
+        ],
+        "text": "50% advance with official Purchase Order, 50% prior to dispatch or upon delivery. Procurement and execution commence upon receipt of advance."
+      },
+      {
+        "id": "delivery",
+        "title": "Delivery & Execution Schedule.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "delivery-a",
+            "text": "Estimated delivery timeline is 2 to 4 working weeks from the date of advance payment clearance and technical drawing approval, subject to stock availability.",
+            "selected": true
+          },
+          {
+            "id": "delivery-b",
+            "text": "Delivery schedule is contingent upon timely provision of site readiness, clear access, and required approvals from the customer.",
+            "selected": true
+          },
+          {
+            "id": "delivery-c",
+            "text": "The Company shall not be held liable for delivery delays caused by Force Majeure circumstances including natural calamities, strikes, government restrictions, or transit bottlenecks.",
+            "selected": true
+          }
+        ],
+        "text": "Estimated delivery timeline is 2 to 4 working weeks from advance payment and technical clearance. Delivery is subject to site readiness and Force Majeure."
+      },
+      {
+        "id": "scope",
+        "title": "Scope of Supply & Installation.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "scope-a",
+            "text": "The scope of supply is strictly confined to the items, specifications, and quantities clearly set forth in this quotation.",
+            "selected": true
+          },
+          {
+            "id": "scope-b",
+            "text": "Site civil works, masonry, primary electrical cabling, earthing, water supply, and scaffolding are within the customer's scope unless explicitly quoted as included.",
+            "selected": true
+          },
+          {
+            "id": "scope-c",
+            "text": "Any additional equipment, modification, or extra work requested by the customer beyond the quoted scope will be charged separately under a supplementary quotation.",
+            "selected": true
+          }
+        ],
+        "text": "Scope is strictly restricted to listed items and specifications. Site civil, masonry, and electrical infrastructure are in customer scope unless explicitly included."
+      }
+    ],
+    "remarks": "RFQ No: ENQ-29 / Quotation Notes",
+    "enquiryRemarks": "test quotation",
+    "authorizedSignature": "",
+    "status": "Active",
+    "createdAt": "2026-09-17T10:11:07.144Z",
+    "updatedAt": "2026-09-17T10:11:07.144Z"
+  },
+  {
+    "id": "51b5642e-834c-4c57-a287-ec980a388d21",
+    "quotationNumber": "SIGMA-QT-2026-0002",
+    "enquiryId": "28",
+    "customer": {
+      "name": "TUSHAR KARMAKAR",
+      "email": "tushkarmakar@gmail.com",
+      "phone": "06370680744",
+      "company": "",
+      "address": "Site Delivery / Ex-Works",
+      "panVat": ""
+    },
+    "projectTitle": "Quotation for Solostove Bonfire with Stand",
+    "date": "14/09/2026",
+    "validity": "30 Days",
+    "deliveryTime": "2-3 Working Weeks",
+    "items": [
+      {
+        "id": 1,
+        "description": "Solostove Bonfire with Stand",
+        "qty": 1,
+        "unitPrice": 83998,
+        "amount": 83998
+      }
+    ],
+    "subtotal": 83998,
+    "isVatApplicable": true,
+    "vatRate": 13,
+    "vatAmount": 10919.74,
+    "grandTotal": 94917.74,
+    "amountInWords": "Ninety Four Thousand Nine Hundred Eighteen Rupees Only",
+    "terms": [
+      {
+        "id": "general",
+        "title": "General Conditions & Applications.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "general-a",
+            "text": "All Quotations and Contracts placed with the Company are subject to these Terms and Conditions. The Company may at any time vary or alter these Terms and Conditions.",
+            "selected": true
+          },
+          {
+            "id": "general-b",
+            "text": "Modifications, additions and/or extensions of these Terms and Conditions, and/or provisions that vary from these Terms and Conditions will be binding on the Company only if agreed between the parties explicitly and in writing.",
+            "selected": true
+          },
+          {
+            "id": "general-c",
+            "text": "The applicability of general or specific terms and conditions and provisions of Customer is expressly rejected by the Company, unless otherwise prior written agreement.",
+            "selected": true
+          },
+          {
+            "id": "general-d",
+            "text": "The Customer to whom these Terms and Conditions apply shall accept these terms for all subsequent Offers as of now presented by the Company, all Contracts that will be concluded and for all other subsequent legal relationship between the Company and the Customer.",
+            "selected": true
+          },
+          {
+            "id": "general-e",
+            "text": "If a customer cancels or alters any order or parts for special products, standard products or services after 3 (three) days from the Order Confirmation, the Company reserves the right to charge to the Customer costs of the special products and materials already acquired for the order, together with costs of the labour and tooling expended to the date of such cancellation or alteration.",
+            "selected": true
+          }
+        ],
+        "text": "All Quotations and Contracts placed with the Company are subject to these Terms and Conditions. Modifications or additions are binding only if agreed in writing. Cancellation after 3 days from Order Confirmation incurs costs of materials acquired and labour expended."
+      },
+      {
+        "id": "quotations",
+        "title": "Quotations, Orders and Contracts.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "quotations-a",
+            "text": "Unless otherwise agreed and indicated under the term \"Validity\" of the document forwarded by the Company, Quotations validity period is identified as 30 days from the date of Quotation sent.",
+            "selected": true
+          },
+          {
+            "id": "quotations-b",
+            "text": "Contract is stipulated when the Company receives written confirmation from the Customer of the issued Quotation (e.g. Purchase Order from the Customer), unless the Company shall not revoke its offer within 2 (two) working days of receipt of such confirmation. In case of different assignment methods of the Order, the Contract is stipulated when the written acceptance of the Order (e.g. Order Confirmation) is sent to the Customer by the Company.",
+            "selected": true
+          },
+          {
+            "id": "quotations-c",
+            "text": "The Company may reserve the right to revoke the Quotation and the Order received from the Customer if the submitted document differs from the Offer presented and/or the product/service requested does not correspond to what was discussed between parties.",
+            "selected": true
+          },
+          {
+            "id": "quotations-d",
+            "text": "The Company may in its absolute discretion refuse to accept an Order whether received from an existing Customer or a new Customer. The Company will not be liable for any damages, loss or compensation arising from its decision to refuse, to accept or to cancel an Order after it has been received by the Company.",
+            "selected": true
+          },
+          {
+            "id": "quotations-e",
+            "text": "The Company is not required to provide the Customer for any reason or justification to refuse or cancel the Order pursuant to paragraph d. above. If any materials specified within the Quotation become unavailable prior to delivery or installation, the Company in its absolute discretion may substitute a reasonable alternative as long as it meets the relevant standard.",
+            "selected": true
+          }
+        ],
+        "text": "Quotations validity period is 30 days from issue. Contract is stipulated upon written Purchase Order / Order Confirmation. The Company reserves right to revoke or refuse orders if specifications differ or materials become unavailable."
+      },
+      {
+        "id": "pricing",
+        "title": "Pricing.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "pricing-a",
+            "text": "Unless otherwise stated, all prices are in Nepali Currency (NPR). Pricing does not include Ex-Works/ Warehouse unless otherwise stated, all prices are exclusive of VAT, any costs related to activities done by third parties.",
+            "selected": true
+          },
+          {
+            "id": "pricing-b",
+            "text": "Transit & Insurance of goods is not included & should be done by customer. Company will be not responsible/liable for any damage done.",
+            "selected": true
+          },
+          {
+            "id": "pricing-c",
+            "text": "For special products quoted that needs to be defined with the Customer final construction drawings. Prices quoted in the initial Offer, in this case, are subject to any type of modification based on the choices made subsequently between the parties and the final constructional drawings realized by the Company and confirmed by the Customer.",
+            "selected": true
+          },
+          {
+            "id": "pricing-d",
+            "text": "If there is any error or omission in the Quotation, the Company reserves the right to amend the Quotation price. This clause applies even if it has been accepted by the Customer. In this case the Company will emits a new updated Quotation.",
+            "selected": true
+          },
+          {
+            "id": "pricing-e",
+            "text": "Price differences between Quotations issued for the same products may be due to increases in wage costs and/or changes in other costs of manufacturing or on raw material acquisition.",
+            "selected": true
+          }
+        ],
+        "text": "All prices are in Nepalese Rupees (NPR), exclusive of 13% VAT unless stated otherwise. Transit & insurance to be arranged by customer. Prices subject to revision in case of design changes or material cost escalation."
+      },
+      {
+        "id": "payment",
+        "title": "Terms of Payment.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "payment-a",
+            "text": "Payments due to Company are to be made, without retention, within the term fixed in the Quotation and following documents.",
+            "selected": true
+          },
+          {
+            "id": "payment-b",
+            "text": "Payment will be considered done when the funds are cleared in the Company's nominated bank account.",
+            "selected": true
+          },
+          {
+            "id": "payment-c",
+            "text": "Products will be delivered to the place or places specified in the Order and in terms cited in the Quotation and confirmed in the Order Confirmation, once the payment terms fulfilled.",
+            "selected": true
+          },
+          {
+            "id": "payment-d",
+            "text": "If the Customer fails to make payment in accordance with the terms, the Company will be entitled to: • charge default interest at the rate of 10% per annum on all overdue amounts calculated daily from the due date; • claim all costs relating to collection; • cease all remaining work until payment is received.",
+            "selected": true
+          }
+        ],
+        "text": "Payments to be made within term fixed in quotation. Delivery initiated once payment terms fulfilled. Overdue payments accrue default interest at 10% per annum calculated daily."
+      },
+      {
+        "id": "installation",
+        "title": "Installation.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "installation-a",
+            "text": "Each Quotation indicates if the installation is included or not. It is responsibility of the Customer to ensure that installation can be completed without any interruption.",
+            "selected": true
+          },
+          {
+            "id": "installation-b",
+            "text": "If installation is not included, products delivered need to be installed by the Customer or trained personnel identified by the Customer.",
+            "selected": true
+          },
+          {
+            "id": "installation-c",
+            "text": "Afterwards, if the Customer requires installation on Company's products (only) and this is not agreed upon in the Quotation, it will be quoted separately.",
+            "selected": true
+          }
+        ],
+        "text": "Quotation indicates if installation is included. Customer must ensure clear site readiness without interruption. Additional installation requested later will be quoted separately."
+      },
+      {
+        "id": "warranty",
+        "title": "Warranty.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "warranty-a",
+            "text": "Warranty is always cited in the Quotation terms.",
+            "selected": true
+          },
+          {
+            "id": "warranty-b",
+            "text": "During the Warranty period the Customer should give notice in writing to the Company of any faults or defects. The Company shall repair or replace the product without cost to Customer if due to defects.",
+            "selected": true
+          },
+          {
+            "id": "warranty-c",
+            "text": "On returned goods, parts damaged for poor packaging of the Customer are not covered by Warranty.",
+            "selected": true
+          }
+        ],
+        "text": "Equipment carries standard warranty against manufacturing defects. Customer must give written notice of faults. Damage caused by improper packaging or handling is excluded."
+      },
+      {
+        "id": "return",
+        "title": "Return.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "return-a",
+            "text": "Customer shall return the goods within 30 days from the Date of Invoice with Valid Reason and following documents attached.",
+            "selected": true
+          },
+          {
+            "id": "return-b",
+            "text": "Customer shall pack goods properly. Damaged goods due to Customer poor handling will not be accepted. Keep original packing for 1 month.",
+            "selected": true
+          }
+        ],
+        "text": "Goods returned within 30 days of invoice with valid reason and original packaging. Damage due to poor customer handling will not be accepted."
+      },
+      {
+        "id": "delivery",
+        "title": "Delivery Time.",
+        "selected": true,
+        "subclauses": [
+          {
+            "id": "delivery-a",
+            "text": "Delivery time of goods depends on product type. Please consult Quotation for delivery time.",
+            "selected": true
+          },
+          {
+            "id": "delivery-b",
+            "text": "The Company will not be liable for any failure or delay in supply or delivery due to Force Majeure events.",
+            "selected": true
+          }
+        ],
+        "text": "Delivery time as specified in quotation. The Company is not liable for delay caused by Force Majeure events or site delays."
+      }
+    ],
+    "remarks": "test",
+    "status": "Active",
+    "createdAt": "2026-09-14T12:39:21.156Z",
+    "updatedAt": "2026-09-14T12:39:21.156Z"
+  },
+  {
+    "id": "b3912b95-3f7b-450f-8f3d-43b5822b3319",
+    "quotationNumber": "SIGMA-QT-2026-0001",
+    "enquiryId": null,
+    "customer": {
+      "name": "Ashoke Rana",
+      "email": "ashokesjbrana@gmail.com",
+      "phone": "9851020082",
+      "company": "",
+      "address": "Baluwatar, Kathmandu",
+      "panVat": ""
+    },
+    "projectTitle": "Quotation for Wood Fire Stove Insert",
+    "date": "14/09/2026",
+    "validity": "30 Days",
+    "deliveryTime": "2-3 Working Weeks",
+    "items": [
+      {
+        "description": "Wood Fire Stove Insert (IM-WFS-978459-I)",
+        "qty": 1,
+        "unitPrice": 245000,
+        "amount": 245000
+      }
+    ],
+    "subtotal": 245000,
+    "isVatApplicable": true,
+    "vatRate": 13,
+    "vatAmount": 31850,
+    "grandTotal": 276850,
+    "amountInWords": "Two Lakh Seventy Six Thousand Eight Hundred Fifty Rupees Only",
+    "bankDetails": {
+      "bankName": "Nepal Investment Mega Bank",
+      "accountName": "Sigma Technologies Pvt. Ltd.",
+      "accountNumber": "00401040250962",
+      "branch": "Pulchowk, Lalitpur"
+    },
+    "terms": [
+      {
+        "id": "validity",
+        "title": "Quotation Validity",
+        "text": "This Quotation is valid for 30 days."
+      }
+    ],
+    "remarks": "",
+    "status": "Active",
+    "createdAt": "2026-09-14T12:19:19.043Z",
+    "updatedAt": "2026-09-14T12:19:19.043Z"
+  }
+]

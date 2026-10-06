@@ -15,6 +15,8 @@ import * as adminDashboardController from '../controllers/adminDashboardControll
 import * as adminPreviewController from '../controllers/adminPreviewController.js';
 import * as adminCleanupController from '../controllers/adminCleanupController.js';
 import * as adminProductImageController from '../controllers/adminProductImageController.js';
+import * as adminEnquiryController from '../controllers/adminEnquiryController.js';
+import * as adminQuotationController from '../controllers/adminQuotationController.js';
 import * as agentController from '../controllers/agentController.js';
 import * as ticketController from '../controllers/ticketController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
@@ -105,6 +107,18 @@ router.delete('/downloads/:id', adminDownloadController.deleteDownload);
 
 // Contact Routes
 router.get('/contacts', adminContactController.getAllContacts);
+
+// Product Enquiry Routes
+router.get('/enquiries', adminEnquiryController.getAllEnquiries);
+router.get('/enquiries/:id', adminEnquiryController.getEnquiryById);
+router.delete('/enquiries/:id', adminEnquiryController.deleteEnquiry);
+
+// Quotation Routes
+router.get('/quotations/next-number', adminQuotationController.getNextNumber);
+router.get('/quotations', adminQuotationController.getAllQuotations);
+router.get('/quotations/:id', adminQuotationController.getQuotationById);
+router.post('/quotations', adminQuotationController.saveQuotation);
+router.delete('/quotations/:id', adminQuotationController.deleteQuotation);
 
 // Subscriber Routes
 router.get('/subscribers', adminSubscriberController.getAllSubscribers);
