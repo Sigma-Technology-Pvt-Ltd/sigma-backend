@@ -8,6 +8,7 @@ import adminRoutes from './routes/admin.js';
 import imageRoutes from './routes/images.js';
 import ticketRoutes from './routes/tickets.js';
 import agentAuthRoutes from './routes/agentAuth.js';
+import { getSitemap } from './controllers/sitemapController.js';
 
 dotenv.config();
 
@@ -47,7 +48,8 @@ app.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true
+    credentials: true,
+    exposedHeaders: ['Content-Disposition']
 }));
 app.use(express.json());
 
@@ -153,6 +155,10 @@ const handleHealthCheck = async (req, res) => {
 
 app.get('/health', handleHealthCheck);
 app.get('/api/health', handleHealthCheck);
+
+// Dynamic Sitemap for Search Engines
+app.get('/sitemap.xml', getSitemap);
+app.get('/api/sitemap.xml', getSitemap);
 
 // Routes
 app.use('/images', imageRoutes);       // Image proxy — hides Supabase URL

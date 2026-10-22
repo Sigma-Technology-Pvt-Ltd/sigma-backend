@@ -39,13 +39,36 @@ export const getBannerById = async (req, res) => {
 export const createBanner = async (req, res) => {
     try {
         const { title, type, links, subtitle, status } = req.body;
+        const files = req.files || (req.file ? [req.file] : []);
         
         let imageName = null;
-        if (req.file) {
-            imageName = await processAndSaveImage(req.file.buffer, 'banners');
+        const mainImageFile = files.find(f => f.fieldname === 'image');
+        if (mainImageFile) {
+            imageName = await processAndSaveImage(mainImageFile.buffer, 'banners');
         }
 
-        // Generate a fallback slug since it's required by the schema, although banners might not use it directly.
+        let finalSubtitle = subtitle || null;
+        if (req.body.clusterConfig) {
+            try {
+                let config = typeof req.body.clusterConfig === 'string' 
+                    ? JSON.parse(req.body.clusterConfig) 
+                    : req.body.clusterConfig;
+                
+                const clusterFiles = files.filter(f => f.fieldname.startsWith('cluster_'));
+                for (const cFile of clusterFiles) {
+                    const slotIndex = parseInt(cFile.fieldname.replace('cluster_', ''), 10);
+                    if (!isNaN(slotIndex) && config.images && config.images[slotIndex]) {
+                        const savedFilename = await processAndSaveImage(cFile.buffer, 'banners');
+                        config.images[slotIndex].image = savedFilename;
+                    }
+                }
+                finalSubtitle = JSON.stringify(config);
+            } catch (err) {
+                console.warn('Failed parsing clusterConfig on create:', err);
+            }
+        }
+
+        // Generate a fallback slug since it's required by the schema
         const baseSlug = title ? slugify(title, { lower: true, strict: true }) : 'banner';
         const slug = `${baseSlug}-${Date.now()}`;
 
@@ -55,7 +78,7 @@ export const createBanner = async (req, res) => {
                 slug,
                 type: type || null,
                 links: links || null,
-                subtitle: subtitle || null,
+                subtitle: finalSubtitle,
                 status: status !== undefined ? parseInt(status) : 1,
                 image: imageName,
                 userId: req.user ? parseInt(req.user.id) : 1,
@@ -75,6 +98,7 @@ export const updateBanner = async (req, res) => {
     try {
         const { id } = req.params;
         const { title, type, links, subtitle, status } = req.body;
+        const files = req.files || (req.file ? [req.file] : []);
 
         const bannerId = parseInt(id);
         const existingBanner = await prisma.banner.findUnique({ where: { id: bannerId } });
@@ -83,8 +107,30 @@ export const updateBanner = async (req, res) => {
         }
 
         let imageName = existingBanner.image;
-        if (req.file) {
-            imageName = await processAndSaveImage(req.file.buffer, 'banners');
+        const mainImageFile = files.find(f => f.fieldname === 'image');
+        if (mainImageFile) {
+            imageName = await processAndSaveImage(mainImageFile.buffer, 'banners');
+        }
+
+        let finalSubtitle = subtitle !== undefined ? subtitle : existingBanner.subtitle;
+        if (req.body.clusterConfig) {
+            try {
+                let config = typeof req.body.clusterConfig === 'string' 
+                    ? JSON.parse(req.body.clusterConfig) 
+                    : req.body.clusterConfig;
+                
+                const clusterFiles = files.filter(f => f.fieldname.startsWith('cluster_'));
+                for (const cFile of clusterFiles) {
+                    const slotIndex = parseInt(cFile.fieldname.replace('cluster_', ''), 10);
+                    if (!isNaN(slotIndex) && config.images && config.images[slotIndex]) {
+                        const savedFilename = await processAndSaveImage(cFile.buffer, 'banners');
+                        config.images[slotIndex].image = savedFilename;
+                    }
+                }
+                finalSubtitle = JSON.stringify(config);
+            } catch (err) {
+                console.warn('Failed parsing clusterConfig on update:', err);
+            }
         }
 
         const slug = title ? slugify(title, { lower: true, strict: true }) : existingBanner.slug;
@@ -96,7 +142,7 @@ export const updateBanner = async (req, res) => {
                 slug,
                 type: type !== undefined ? type : existingBanner.type,
                 links: links !== undefined ? links : existingBanner.links,
-                subtitle: subtitle !== undefined ? subtitle : existingBanner.subtitle,
+                subtitle: finalSubtitle,
                 status: status !== undefined ? parseInt(status) : existingBanner.status,
                 image: imageName,
             }

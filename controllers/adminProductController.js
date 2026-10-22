@@ -1,14 +1,29 @@
 import { PrismaClient } from '@prisma/client';
 import { processAndSaveImage } from '../utils/imageProcessor.js';
 import slugify from 'slugify';
+import cache from '../utils/cache.js';
 
 const prisma = new PrismaClient();
+
+// Invalidate caches related to products and categories
+const clearProductCaches = () => {
+    cache.del('category:*');
+    cache.del('categories:*');
+    cache.del('product:*');
+};
 
 // Get all products
 export const getAllProducts = async (req, res) => {
     try {
+        const { categoryId } = req.query;
+        const whereClause = categoryId ? { categoryId: parseInt(categoryId) } : {};
+
         const products = await prisma.product.findMany({
-            orderBy: { createdAt: 'desc' }
+            where: whereClause,
+            orderBy: [
+                { order: 'asc' },
+                { id: 'asc' }
+            ]
         });
         return res.status(200).json({ result: 'success', data: products });
     } catch (error) {
@@ -17,10 +32,41 @@ export const getAllProducts = async (req, res) => {
     }
 };
 
+// Reorder products (bulk update sequence)
+export const reorderProducts = async (req, res) => {
+    try {
+        const { items } = req.body;
+        if (!items || !Array.isArray(items)) {
+            return res.status(400).json({ result: 'error', message: 'Items array is required ({ items: [{ id, order }] })' });
+        }
+
+        // Perform transactional update for all provided product orders
+        await prisma.$transaction(
+            items.map((item, index) =>
+                prisma.product.update({
+                    where: { id: parseInt(item.id) },
+                    data: {
+                        order: item.order !== undefined && item.order !== null ? parseInt(item.order) : (index + 1),
+                        updatedAt: new Date()
+                    }
+                })
+            )
+        );
+
+        // Clear cached frontend responses
+        clearProductCaches();
+
+        return res.status(200).json({ result: 'success', message: 'Product order updated successfully' });
+    } catch (error) {
+        console.error('Error reordering products:', error);
+        return res.status(500).json({ result: 'error', message: 'Internal server error' });
+    }
+};
+
 // Create a product
 export const createProduct = async (req, res) => {
     try {
-        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification, type, orderStatus } = req.body;
+        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification, type, orderStatus, order } = req.body;
         
         if (!title || !categoryId) {
             return res.status(400).json({ result: 'error', message: 'Title and Category are required' });
@@ -49,12 +95,15 @@ export const createProduct = async (req, res) => {
                 specification: specification || null,
                 type: type || null,
                 orderStatus: orderStatus !== undefined ? parseInt(orderStatus) : 0,
+                order: order !== undefined && order !== '' ? parseInt(order) : 0,
                 image: imageName,
                 userId: req.user ? parseInt(req.user.id) : 1,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             }
         });
+
+        clearProductCaches();
 
         return res.status(201).json({ result: 'success', data: newProduct, message: 'Product created successfully' });
     } catch (error) {
@@ -67,7 +116,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification, type, orderStatus } = req.body;
+        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification, type, orderStatus, order } = req.body;
 
         const productId = parseInt(id);
         const existingProduct = await prisma.product.findUnique({ where: { id: productId } });
@@ -99,10 +148,13 @@ export const updateProduct = async (req, res) => {
                 specification: specification !== undefined ? specification : existingProduct.specification,
                 type: type !== undefined ? (type || null) : existingProduct.type,
                 orderStatus: orderStatus !== undefined ? parseInt(orderStatus) : existingProduct.orderStatus,
+                order: order !== undefined && order !== '' ? parseInt(order) : existingProduct.order,
                 image: imageName,
                 updatedAt: new Date(),
             }
         });
+
+        clearProductCaches();
 
         return res.status(200).json({ result: 'success', data: updatedProduct, message: 'Product updated successfully' });
     } catch (error) {
@@ -119,6 +171,8 @@ export const deleteProduct = async (req, res) => {
 
         await prisma.product.delete({ where: { id: productId } });
         
+        clearProductCaches();
+
         return res.status(200).json({ result: 'success', message: 'Product deleted successfully' });
     } catch (error) {
         console.error('Error deleting product:', error);

@@ -52,6 +52,7 @@ router.delete('/categories/:id', adminCategoryController.deleteCategory);
 
 // Product Routes
 router.get('/products', adminProductController.getAllProducts);
+router.put('/products/reorder', adminProductController.reorderProducts);
 router.post('/products', upload.single('image'), adminProductController.createProduct);
 router.put('/products/:id', upload.single('image'), adminProductController.updateProduct);
 router.delete('/products/:id', adminProductController.deleteProduct);
@@ -64,8 +65,8 @@ router.delete('/products/images/:imageId', adminProductImageController.deletePro
 // Banner Routes
 router.get('/banners', adminBannerController.getAllBanners);
 router.get('/banners/:id', adminBannerController.getBannerById);
-router.post('/banners', upload.single('image'), adminBannerController.createBanner);
-router.put('/banners/:id', upload.single('image'), adminBannerController.updateBanner);
+router.post('/banners', upload.any(), adminBannerController.createBanner);
+router.put('/banners/:id', upload.any(), adminBannerController.updateBanner);
 router.delete('/banners/:id', adminBannerController.deleteBanner);
 
 // Blog Category Routes

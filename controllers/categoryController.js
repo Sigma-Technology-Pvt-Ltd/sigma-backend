@@ -69,6 +69,13 @@ export const navigation = async (req, res) => {
 export const show = async (req, res) => {
     try {
         const categorySlug = req.params.category;
+        const queryCats = req.query.categories || '';
+        const cacheKey = `category:show:${categorySlug}:${queryCats}`;
+        const cached = cache.get(cacheKey);
+        if (cached) {
+            return res.json(cached);
+        }
+
         const categoryData = await prisma.category.findFirst({
             where: { slug: categorySlug }
         });
@@ -116,14 +123,19 @@ export const show = async (req, res) => {
             });
         }
 
-        const products = getApiProducts(productList);
-        const category = await getApiCategory(categoryData);
+        const [products, category] = await Promise.all([
+            Promise.resolve(getApiProducts(productList)),
+            getApiCategory(categoryData)
+        ]);
 
-        return res.json({
+        const responseData = {
             result: 'success',
             category: category,
             products: products
-        });
+        };
+
+        cache.set(cacheKey, responseData, 600);
+        return res.json(responseData);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Server error' });
@@ -133,6 +145,12 @@ export const show = async (req, res) => {
 export const categoryList = async (req, res) => {
     try {
         const categorySlug = req.params.category;
+        const cacheKey = `category:list:${categorySlug}`;
+        const cached = cache.get(cacheKey);
+        if (cached) {
+            return res.json(cached);
+        }
+
         const categoryData = await prisma.category.findFirst({
             where: { slug: categorySlug }
         });
@@ -141,26 +159,30 @@ export const categoryList = async (req, res) => {
             return res.status(404).json({ error: 'Category not found' });
         }
 
-        const categoriesData = await prisma.category.findMany({
-            where: { 
-                parentCategory: categoryData.id.toString(),
-                status: 1
-            },
-            orderBy: { order: 'asc' }
-        });
+        const [categoriesData, category] = await Promise.all([
+            prisma.category.findMany({
+                where: { 
+                    parentCategory: categoryData.id.toString(),
+                    status: 1
+                },
+                orderBy: { order: 'asc' }
+            }),
+            getApiCategory(categoryData)
+        ]);
 
         let categories = [];
         if (categoriesData.length > 0) {
             categories = await getApiCategories(categoriesData);
         }
-        
-        const category = await getApiCategory(categoryData);
 
-        return res.json({
+        const responseData = {
             result: 'success',
             categories: categories,
             category: category
-        });
+        };
+
+        cache.set(cacheKey, responseData, 600);
+        return res.json(responseData);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Server error' });

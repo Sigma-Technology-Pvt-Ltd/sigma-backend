@@ -174,10 +174,12 @@ export function getApiProducts(items) {
 export async function getApiProduct(item) {
     if (!item) return {};
 
-    const brand = item.brandId ? await prisma.brand.findUnique({ where: { id: BigInt(item.brandId) } }) : null;
-    const category = item.categoryId ? await prisma.category.findUnique({ where: { id: BigInt(item.categoryId) } }) : null;
-    const images = await prisma.image.findMany({ where: { productId: Number(item.id) } });
-    const downloads = await prisma.downloadFile.findMany({ where: { productId: Number(item.id) } });
+    const [brand, category, images, downloads] = await Promise.all([
+        item.brandId ? prisma.brand.findUnique({ where: { id: BigInt(item.brandId) } }) : Promise.resolve(null),
+        item.categoryId ? prisma.category.findUnique({ where: { id: BigInt(item.categoryId) } }) : Promise.resolve(null),
+        prisma.image.findMany({ where: { productId: Number(item.id) } }),
+        prisma.downloadFile.findMany({ where: { productId: Number(item.id) } })
+    ]);
 
     return {
         slug: item.slug,
@@ -200,11 +202,26 @@ export async function getApiProduct(item) {
             image: img.filename ? getImageUrl(img.filename, '/frontend/images/products/') : null,
             slug: img.slug
         })),
-        downloads: downloads.map(dl => ({
-            id: Number(dl.id),
-            image: dl.filename ? getImageUrl(dl.filename, '/frontend/images/products/') : null,
-            slug: dl.slug
-        })),
+        downloads: downloads.map((dl, idx) => {
+            const isPdf = dl.filename && dl.filename.toLowerCase().endsWith('.pdf');
+            const dir = isPdf ? '/frontend/pdf/' : '/frontend/images/products/';
+            
+            let resolvedTitle = (dl.title || dl.originalFilename || '').trim();
+            if (resolvedTitle.toLowerCase().endsWith('.pdf')) {
+                resolvedTitle = resolvedTitle.substring(0, resolvedTitle.length - 4).trim();
+            }
+            if (!resolvedTitle || resolvedTitle.toLowerCase() === 'download file' || resolvedTitle.toLowerCase() === 'download brochure') {
+                resolvedTitle = idx === 0 ? 'Product Catalog' : (idx === 1 ? 'User Manual' : 'Technical Specifications');
+            }
+
+            return {
+                id: Number(dl.id),
+                image: dl.filename ? getImageUrl(dl.filename, dir) : null,
+                slug: dl.slug,
+                title: resolvedTitle,
+                original_filename: dl.originalFilename || resolvedTitle
+            };
+        }),
         stock: Number(item.stock || 0),
         type: item.type,
         order_status: Number(item.orderStatus || 0),

@@ -69,12 +69,38 @@ export const about = async (req, res) => {
             orderBy: { id: 'desc' }
         });
 
+        // Check if subtitle contains JSON config for mode and cluster images
+        let mode = 'single';
+        let clusterImages = null;
+        if (banner && banner.subtitle) {
+            try {
+                if (banner.subtitle.trim().startsWith('{')) {
+                    const parsed = JSON.parse(banner.subtitle);
+                    mode = parsed.mode || 'single';
+                    if (Array.isArray(parsed.images)) {
+                        clusterImages = parsed.images.map(slot => ({
+                            ...slot,
+                            image: slot.image 
+                                ? (slot.image.startsWith('http') || slot.image.startsWith('/') 
+                                    ? slot.image 
+                                    : getImageUrl(slot.image, '/frontend/images/banners/'))
+                                : null
+                        }));
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed parsing about banner subtitle JSON:', e);
+            }
+        }
+
         const formatted = banner ? {
             id: banner.id.toString(),
             title: banner.title,
             type: banner.type,
             link: banner.links,
             subtitle: banner.subtitle,
+            mode,
+            clusterImages,
             image: getImageUrl(banner.image, '/frontend/images/banners/')
         } : null;
 
