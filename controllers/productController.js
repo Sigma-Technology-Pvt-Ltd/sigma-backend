@@ -191,14 +191,30 @@ export const downloadImage = async (req, res) => {
             outName += `.${ext}`;
         }
 
-        res.set({
-            'Content-Type': contentType,
-            'Content-Disposition': `attachment; filename="${outName.replace(/"/g, '')}"; filename*=UTF-8''${encodeURIComponent(outName)}`
-        });
+        // Pure ASCII fallback for legacy header to prevent Node ERR_INVALID_CHAR
+        // Modern browsers will use the UTF-8 filename*= parameter
+        const safeAsciiName = outName
+            .replace(/[^\x20-\x7E]/g, '-')
+            .replace(/[<>:"/\\|?*]+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        try {
+            res.set({
+                'Content-Type': contentType,
+                'Content-Disposition': `attachment; filename="${safeAsciiName.replace(/"/g, '')}"; filename*=UTF-8''${encodeURIComponent(outName)}`
+            });
+        } catch (headerErr) {
+            console.warn('Failed to set UTF-8 Content-Disposition, using safe fallback:', headerErr.message);
+            res.set({
+                'Content-Type': contentType,
+                'Content-Disposition': `attachment; filename="document.${ext || 'pdf'}"`
+            });
+        }
 
         return res.send(buffer);
     } catch (error) {
-        console.error(error);
+        console.error('Download error:', error);
         return res.status(500).json({ result: 'error', message: 'Server error' });
     }
 };
