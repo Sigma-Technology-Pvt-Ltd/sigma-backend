@@ -12,6 +12,10 @@ const FOLDER_MAP = {
     '/frontend/images/blog_categories/':'blog_categories',
     '/frontend/images/testimonials/':   'testimonials',
     '/frontend/images/brands/':         'brands',
+    '/frontend/images/associates/':     'associations',
+    '/frontend/images/associations/':   'associations',
+    '/frontend/images/concerns/':       'concerns',
+    '/frontend/images/sister_concern/': 'concerns',
     '/frontend/pdf/':                   'documents',
 };
 
