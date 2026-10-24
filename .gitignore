@@ -25,6 +25,7 @@ yarn-debug.log*
 Thumbs.db
 
 # Test and Maintenance scripts (not for production)
+scripts/
 test_*.js
 cleanup_*.js
 clear_*.js
