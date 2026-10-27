@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+import { sendEnquiryNotification } from '../utils/emailService.js';
 
 const prisma = new PrismaClient();
 
@@ -43,6 +44,18 @@ export const store = async (req, res) => {
                 createdAt: new Date(),
                 updatedAt: new Date()
             }
+        });
+
+        // Trigger email notification in background (non-blocking, won't fail the user response)
+        sendEnquiryNotification({
+            customerName: name,
+            customerEmail: email,
+            phoneNumber: phone_number.toString(),
+            productName: productData.title,
+            productSlug: productData.slug,
+            remarks: remarks
+        }).catch(err => {
+            console.error('[enquiryController] Background email notification error:', err.message);
         });
 
         return res.json({

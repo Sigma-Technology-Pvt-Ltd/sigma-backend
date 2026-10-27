@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+import { sendContactNotification } from '../utils/emailService.js';
 
 const prisma = new PrismaClient();
 
@@ -33,6 +34,17 @@ export const store = async (req, res) => {
                 createdAt: new Date(),
                 updatedAt: new Date()
             }
+        });
+
+        // Trigger contact notifications in background (non-blocking)
+        sendContactNotification({
+            name,
+            email,
+            phoneNumber: phone_number.toString(),
+            subject,
+            message
+        }).catch(err => {
+            console.error('[contactController] Background contact email error:', err.message);
         });
 
         return res.json({

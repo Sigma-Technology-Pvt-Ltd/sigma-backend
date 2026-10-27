@@ -74,7 +74,6 @@ export const getSitemap = async (req, res) => {
             if (!c.slug) continue;
             const lastMod = (c.updatedAt || c.updated_at) ? new Date(c.updatedAt || c.updated_at).toISOString().split('T')[0] : '2026-10-15';
             xml += `  <url>\n    <loc>${escapeXmlLoc(`https://sigmatechnologies.com.np/product-category/${c.slug}`)}</loc>\n    <lastmod>${lastMod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
-            xml += `  <url>\n    <loc>${escapeXmlLoc(`https://sigmatechnologies.com.np/product-category/${c.slug}/products`)}</loc>\n    <lastmod>${lastMod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
         }
 
         for (const p of products) {
