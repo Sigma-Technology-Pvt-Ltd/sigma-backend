@@ -85,6 +85,7 @@ export const createProduct = async (req, res) => {
                 title,
                 slug,
                 categoryId: parseInt(categoryId),
+                brandId: req.body.brandId ? parseInt(req.body.brandId) : null,
                 summary: summary || null,
                 description: description || '',
                 status: status !== undefined ? parseInt(status) : 1,
@@ -116,7 +117,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, categoryId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification, type, orderStatus, order } = req.body;
+        const { title, categoryId, brandId, summary, description, status, seoTitle, seoDescription, price, salePrice, specification, type, orderStatus, order } = req.body;
 
         const productId = parseInt(id);
         const existingProduct = await prisma.product.findUnique({ where: { id: productId } });
@@ -138,6 +139,7 @@ export const updateProduct = async (req, res) => {
                 title: title || existingProduct.title,
                 slug: slug,
                 categoryId: categoryId ? parseInt(categoryId) : existingProduct.categoryId,
+                brandId: brandId !== undefined ? (brandId ? parseInt(brandId) : null) : existingProduct.brandId,
                 summary: summary !== undefined ? summary : existingProduct.summary,
                 description: description !== undefined ? description : existingProduct.description,
                 status: status !== undefined ? parseInt(status) : existingProduct.status,

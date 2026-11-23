@@ -26,6 +26,7 @@ export const uploadToSupabase = async (buffer, folder, filename, contentType = '
         .upload(filePath, buffer, {
             contentType,
             upsert: true, // overwrite if exists (safe for updates)
+            cacheControl: '31536000', // 1 year cache header
         });
 
     if (error) {

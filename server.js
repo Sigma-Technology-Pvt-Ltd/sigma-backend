@@ -9,12 +9,47 @@ import imageRoutes from './routes/images.js';
 import ticketRoutes from './routes/tickets.js';
 import agentAuthRoutes from './routes/agentAuth.js';
 import { getSitemap } from './controllers/sitemapController.js';
+import cache from './utils/cache.js';
 
 dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
+
+// Run idempotent startup data fixes
+async function applyStartupDataFixes() {
+    try {
+        // 1. Ensure Brand 6 (INNMOTEK) has its logo image
+        await prisma.brand.updateMany({
+            where: { id: 6 },
+            data: { image: 'b979bda3-a0ee-4632-8357-b009a916004b.webp' }
+        });
+
+        // 2. Map all IM- patio & infrared heaters to Innmotek brand (id: 6)
+        await prisma.product.updateMany({
+            where: {
+                OR: [
+                    { slug: 'infrared-patio-heaterim-ih-1500-h' },
+                    { slug: 'infrared-patio-heater-im-ih-1500-h' },
+                    { title: { contains: 'IM-IH-1500-H' } },
+                    { title: { contains: 'IM-IH-2000-O' } },
+                    { title: { contains: 'IM-IH-3000-P' } },
+                    { title: { contains: 'IM-IH-2000-C' } },
+                    { title: { contains: 'IM-IH-2000-ST' } },
+                    { title: { contains: 'Innmotek' } }
+                ]
+            },
+            data: { brandId: 6 }
+        });
+
+        cache.flush();
+        console.log('[applyStartupDataFixes] Innmotek brand mappings verified successfully.');
+    } catch (e) {
+        console.warn('[applyStartupDataFixes] Note:', e.message);
+    }
+}
+applyStartupDataFixes();
 
 const allowedOrigins = [
     process.env.FRONTEND_URL,

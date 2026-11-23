@@ -39,7 +39,7 @@ export const getCategoryById = async (req, res) => {
 export const createCategory = async (req, res) => {
     try {
         const { title, seoTitle, seoDescription, parentCategory, status, order, navigationStatus } = req.body;
-        
+
         if (!title) {
             return res.status(400).json({ result: 'error', message: 'Title is required' });
         }
@@ -97,7 +97,10 @@ export const updateCategory = async (req, res) => {
         }
 
         const slug = title ? slugify(title, { lower: true, strict: true }) : existingCategory.slug;
-        const isRoot = !parentCategory || parentCategory === '' || parentCategory === '0';
+        const newParentCategory = parentCategory !== undefined
+            ? (parentCategory && parentCategory !== '' && parentCategory !== '0' ? String(parentCategory) : null)
+            : existingCategory.parentCategory;
+        const isRoot = !newParentCategory;
 
         const updatedCategory = await prisma.category.update({
             where: { id: categoryId },
@@ -106,7 +109,7 @@ export const updateCategory = async (req, res) => {
                 slug: slug,
                 seoTitle: seoTitle !== undefined ? seoTitle : existingCategory.seoTitle,
                 seoDescription: seoDescription !== undefined ? seoDescription : existingCategory.seoDescription,
-                parentCategory: parentCategory ? String(parentCategory) : null,
+                parentCategory: newParentCategory,
                 status: status !== undefined ? parseInt(status) : existingCategory.status,
                 navigationStatus: navigationStatus !== undefined ? parseInt(navigationStatus) : (isRoot ? 1 : existingCategory.navigationStatus),
                 homeStatus: homeStatus !== undefined ? parseInt(homeStatus) : (isRoot ? 1 : existingCategory.homeStatus),
@@ -130,7 +133,7 @@ export const deleteCategory = async (req, res) => {
         const categoryId = parseInt(id);
 
         await prisma.category.delete({ where: { id: categoryId } });
-        
+
         cache.del('categories:*');
         return res.status(200).json({ result: 'success', message: 'Category deleted successfully' });
     } catch (error) {

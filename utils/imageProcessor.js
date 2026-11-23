@@ -11,9 +11,15 @@ import { uploadToSupabase } from './supabaseStorage.js';
 export const processAndSaveImage = async (buffer, subfolder) => {
     const filename = `${uuidv4()}.webp`;
 
-    // Convert to webp with sharp
+    // Resize to safe maximum dimensions and convert to WebP
     const webpBuffer = await sharp(buffer)
-        .webp({ quality: 80 })
+        .resize({
+            width: 1920,
+            height: 1080,
+            fit: 'inside',
+            withoutEnlargement: true
+        })
+        .webp({ quality: 75, effort: 4 })
         .toBuffer();
 
     // Upload to Supabase bucket
