@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { processAndSaveImage } from '../utils/imageProcessor.js';
+import { deleteFromSupabase } from '../utils/supabaseStorage.js';
 import slugify from 'slugify';
 import cache from '../utils/cache.js';
 
@@ -91,9 +92,12 @@ export const updateCategory = async (req, res) => {
 
         let imageName = existingCategory.image;
         if (req.file) {
+            // Delete old superseded image from storage
+            if (existingCategory.image) {
+                deleteFromSupabase('categories', existingCategory.image);
+            }
             // Process the newly uploaded image
             imageName = await processAndSaveImage(req.file.buffer, 'categories');
-            // Optional: delete old image from disk here to save space
         }
 
         const slug = title ? slugify(title, { lower: true, strict: true }) : existingCategory.slug;
@@ -131,6 +135,11 @@ export const deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;
         const categoryId = parseInt(id);
+
+        const existing = await prisma.category.findUnique({ where: { id: categoryId } });
+        if (existing?.image) {
+            deleteFromSupabase('categories', existing.image);
+        }
 
         await prisma.category.delete({ where: { id: categoryId } });
 

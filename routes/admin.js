@@ -39,9 +39,11 @@ router.get('/dashboard-stats', adminDashboardController.getDashboardStats);
 // Preview Routes
 router.post('/preview', upload.single('image'), adminPreviewController.createPreview);
 
-// Cleanup Routes (Test data removal)
+// Cleanup Routes (Test data removal & Supabase Storage orphan purge)
 router.post('/cleanup/search', adminCleanupController.searchCleanup);
 router.post('/cleanup/delete', adminCleanupController.deleteCleanup);
+router.post('/cleanup/cleanup-orphans', adminCleanupController.cleanupOrphans);
+router.post('/upload/cleanup-orphans', adminCleanupController.cleanupOrphans);
 
 // Category Routes
 router.get('/categories', adminCategoryController.getAllCategories);

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { cleanSupabaseOrphans } from '../utils/supabaseStorage.js';
 
 const prisma = new PrismaClient();
 
@@ -120,5 +121,22 @@ export const deleteCleanup = async (req, res) => {
     } catch (error) {
         console.error('Cleanup delete failed', error);
         res.status(500).json({ result: 'error', message: 'Failed to delete records' });
+    }
+};
+
+/**
+ * POST /api/upload/cleanup-orphans
+ * or POST /api/admin/cleanup/cleanup-orphans
+ */
+export const cleanupOrphans = async (req, res) => {
+    try {
+        const report = await cleanSupabaseOrphans();
+        return res.json({
+            result: 'success',
+            message: `Orphan cleanup complete: purged ${report.purgedCount} orphaned file(s)`,
+            data: report
+        });
+    } catch (err) {
+        return res.status(500).json({ result: 'error', message: err.message });
     }
 };

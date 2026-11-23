@@ -197,6 +197,7 @@ app.get('/api/sitemap.xml', getSitemap);
 
 // Routes
 app.use('/images', imageRoutes);       // Image proxy — hides Supabase URL
+app.use('/api/media', imageRoutes);    // Standard cached media streaming route
 app.use('/api/agent-auth', agentAuthRoutes); // ClaimDesk agent login
 app.use('/api/tickets', ticketRoutes); // Public ticket submission + agent ticket management
 app.use('/api/admin', adminRoutes);
@@ -228,4 +229,18 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+
+    // Supabase 24-Hour Keep-Alive Heartbeat (prevents 7-day inactivity auto-pause)
+    const runKeepAlive = async () => {
+        try {
+            await prisma.$queryRaw`SELECT 1 as keep_alive, NOW() as current_time`;
+            console.log(`[Supabase Keep-Alive] [${new Date().toISOString()}] Ping successful - 7-day auto-pause prevented.`);
+        } catch (err) {
+            console.warn(`[Supabase Keep-Alive] [${new Date().toISOString()}] Heartbeat warning:`, err.message);
+        }
+    };
+    runKeepAlive();
+    const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+    const heartbeatTimer = setInterval(runKeepAlive, TWENTY_FOUR_HOURS_MS);
+    if (heartbeatTimer.unref) heartbeatTimer.unref();
 });

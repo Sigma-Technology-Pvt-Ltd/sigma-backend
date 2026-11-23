@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { processAndSaveImage } from '../utils/imageProcessor.js';
+import { deleteFromSupabase } from '../utils/supabaseStorage.js';
 import slugify from 'slugify';
 import cache from '../utils/cache.js';
 
@@ -127,6 +128,10 @@ export const updateProduct = async (req, res) => {
 
         let imageName = existingProduct.image;
         if (req.file) {
+            // Delete old superseded image from storage and local cache
+            if (existingProduct.image) {
+                deleteFromSupabase('products', existingProduct.image);
+            }
             // Process the newly uploaded image
             imageName = await processAndSaveImage(req.file.buffer, 'products');
         }
@@ -170,6 +175,25 @@ export const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const productId = parseInt(id);
+
+        const existing = await prisma.product.findUnique({
+            where: { id: productId },
+            include: { productImages: true }
+        });
+
+        if (existing) {
+            if (existing.image) {
+                deleteFromSupabase('products', existing.image);
+            }
+            if (existing.download) {
+                deleteFromSupabase('documents', existing.download);
+            }
+            if (Array.isArray(existing.productImages)) {
+                for (const pi of existing.productImages) {
+                    if (pi.image) deleteFromSupabase('products', pi.image);
+                }
+            }
+        }
 
         await prisma.product.delete({ where: { id: productId } });
         
